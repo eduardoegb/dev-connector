@@ -225,23 +225,19 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 			return res.status(404).json({ msg: 'Post not found' });
 		}
 
-		const comment = post.comments.find(
+		const removeIndex = post.comments.findIndex(
 			comment => comment.id == req.params.comment_id
 		);
 
-		if (!comment) {
+		if (removeIndex === -1) {
 			return res.status(404).json({ msg: 'Comment not found' });
 		}
 
-		if (comment.user.toString() !== req.user.id) {
+		if (post.comments[removeIndex].user.toString() !== req.user.id) {
 			return res.status(401).json({ msg: 'User not authorized' });
 		}
 
-		const removeIndex = post.comments.findIndex(
-			mapped => mapped.id == comment.id
-		);
-
-		post.comments.splice(removeIndex, 1);
+		post.comments.splice(removeIndex);
 		await post.save();
 		res.json(post);
 	} catch (error) {
