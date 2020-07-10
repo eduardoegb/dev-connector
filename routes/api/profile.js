@@ -6,6 +6,7 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middlewares/auth');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
+const Post = require('../../models/Post');
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ router.get('/me', auth, async (req, res) => {
 		}).populate('user', ['name', 'avatar']);
 
 		if (!profile) {
-			return res.status(400).json({ msg: 'There is no prfile for this user' });
+			return res.status(400).json({ msg: 'There is no profile for this user' });
 		}
 
 		res.json(profile);
@@ -145,11 +146,12 @@ router.get('/:id', async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
 	try {
+		// Remove posts
+		await Post.deleteMany({ user: req.user.id });
 		// Remove profile
 		await Profile.findOneAndRemove({ user: req.user.id });
 		// Remove user
 		await User.findOneAndRemove({ _id: req.user.id });
-		// Remove posts
 
 		res.json({ msg: 'User deleted' });
 	} catch (error) {
@@ -224,7 +226,7 @@ router.delete('/experience/:id', auth, async (req, res) => {
 			.map(item => item.id)
 			.indexOf(req.params.id);
 
-		profile.experience.splice(removeIndex);
+		profile.experience.splice(removeIndex, 1);
 		await profile.save();
 		res.json(profile);
 	} catch (error) {
@@ -300,7 +302,7 @@ router.delete('/education/:id', auth, async (req, res) => {
 			.map(item => item.id)
 			.indexOf(req.params.id);
 
-		profile.education.splice(removeIndex);
+		profile.education.splice(removeIndex, 1);
 		await profile.save();
 		res.json(profile);
 	} catch (error) {
