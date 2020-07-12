@@ -42,7 +42,7 @@ router.post(
 );
 
 // @route  GET api/posts
-// @desc   Get all post
+// @desc   Get all posts
 // @access Private
 router.get('/', auth, async (req, res) => {
 	try {
@@ -56,7 +56,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // @route  GET api/posts/users/:id
-// @desc   Get all post for user id
+// @desc   Get all posts for user id
 // @access Private
 router.get('/users/:id', auth, async (req, res) => {
 	try {
@@ -201,7 +201,7 @@ router.post(
 
 			post.comments.unshift(comment);
 			await post.save();
-			res.json(post);
+			res.json(post.comments);
 		} catch (error) {
 			console.error(error.message);
 
@@ -215,7 +215,7 @@ router.post(
 );
 
 // @route  DELETE api/posts/comment/:id/:comment_id
-// @desc   Comment a post
+// @desc   Delete a comment
 // @access Private
 router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
 	try {
